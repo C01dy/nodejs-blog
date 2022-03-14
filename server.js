@@ -1,5 +1,4 @@
 const express = require('express');
-const { getAll } = require('./src/models/post');
 const { client } = require('./src/services/db');
 require('dotenv').config();
 
@@ -14,8 +13,6 @@ client
       } else {
         console.log(`Server is running on ${process.env.PORT || 3000}`);
       }
-
-      getAll().then((data) => console.log(data));
     });
   })
   .catch((error) => console.error(error));
