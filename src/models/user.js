@@ -3,17 +3,17 @@ const {
   transformInsertionDataForQueryString,
 } = require('../services/db/helpers');
 
-const getOne = async (id) => {
+const getOne = async (email) => {
   try {
     const query = {
       name: 'get-user',
       text: `
-          SELECT
-              post.title, post.content, post.id, post.created_at,
-              post.updated_at, "user".first_name, "user".last_name, "user".username
-          FROM post JOIN "user" ON post.author_id = "user".id WHERE post.id = $1;
+            SELECT
+              "user".first_name, "user".last_name, "user".username, "user".email
+            FROM 
+              "user" WHERE "user".email = $1;
       `,
-      values: [id],
+      values: [email],
     };
 
     const res = await client.query(query);
