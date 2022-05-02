@@ -1,29 +1,29 @@
-const { client } = require('../services/db');
-const {
+import { pool } from '../db';
+import {
   transformInsertionDataForQueryString,
-} = require('../services/db/helpers');
+} from '../db/helpers'
 
-const getOne = async (email) => {
+export const getOne = async (email) => {
   try {
     const query = {
       name: 'get-user',
       text: `
             SELECT
-              "user".first_name, "user".last_name, "user".username, "user".email
+              "user".id, "user".first_name, "user".last_name, "user".username, "user".email, "user".password
             FROM 
               "user" WHERE "user".email = $1;
       `,
-      values: [email],
     };
 
-    const res = await client.query(query);
-    return res.rows[0];
+    const user = await pool.query(query, [email])
+    console.table(user.rows)
+    return user.rows[0];
   } catch (error) {
     throw new Error(error);
   }
 };
 
-const createOne = async (userData) => {
+export const createOne = async (userData) => {
   try {
     const [dataKeysString, dataValuesArray] =
       transformInsertionDataForQueryString(userData);
@@ -33,18 +33,15 @@ const createOne = async (userData) => {
       text: `
             INSERT INTO "user" (${dataKeysString})
             VALUES(${dataValuesArray
-              .map((_, idx) => `$${idx + 1}`)
-              .join(', ')}) RETURNING *;
+          .map((_, idx) => `$${idx + 1}`)
+          .join(', ')}) RETURNING *;
       `,
-      values: dataValuesArray,
     };
 
-    const res = await client.query(query);
-    console.log(res.rows[0]);
-    return res.rows[0];
+    const user = await pool.query(query, dataValuesArray)
+    return user.rows[0];
   } catch (error) {
     throw new Error(error);
   }
 };
 
-module.exports = { getOne, createOne };

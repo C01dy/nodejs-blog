@@ -1,5 +1,6 @@
-const { Pool, Client } = require("pg")
-require("dotenv").config()
+import { Pool } from "pg"
+import { config } from 'dotenv'
+config()
 
 const dbConfig = {
   user: process.env.PGUSER,
@@ -9,7 +10,5 @@ const dbConfig = {
   port: process.env.PGPORT,
 }
 
-const pool = new Pool(dbConfig)
-const client = new Client(dbConfig)
+export const pool = new Pool(dbConfig)
 
-module.exports = { client, pool }

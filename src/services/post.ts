@@ -1,6 +1,6 @@
-const { client } = require('../services/db');
+import { pool } from '../db';
 
-const getMany = async () => {
+export const getMany = async () => {
   try {
     const query = {
       name: 'get-many-posts',
@@ -12,14 +12,14 @@ const getMany = async () => {
       `,
     };
 
-    const res = await client.query(query);
-    return res.rows;
+    const posts = await pool.query(query);
+    return posts.rows;
   } catch (error) {
     throw new Error(error);
   }
 };
 
-const getOne = async (id) => {
+export const getOne = async (id) => {
   try {
     const query = {
       name: 'get-post',
@@ -29,14 +29,12 @@ const getOne = async (id) => {
               post.updated_at, "user".first_name, "user".last_name, "user".username
           FROM post JOIN "user" ON post.author_id = "user".id WHERE post.id = $1;
       `,
-      values: [id],
     };
 
-    const res = await client.query(query);
-    return res.rows[0];
+    const post = await pool.query(query, [id]);
+    return post.rows[0];
   } catch (error) {
     throw new Error(error);
   }
 };
 
-module.exports = { getMany, getOne };
